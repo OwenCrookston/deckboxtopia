@@ -11,3 +11,7 @@ tokio = "1.28.2"
 tracing = "0.1.40"
 tower-http = { version = "0.4.4", features = ["fs"] }
 serde = "1.0.193"
+url = "2.5.0"
+rand = { version = "0.8.5", features = ["small_rng"] }
+shuttle-persist = "0.34.0"
+uuid = "1.6.1"
