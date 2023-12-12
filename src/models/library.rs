@@ -12,6 +12,17 @@ pub struct Library {
 }
 
 impl Library {
+    /// creates a library
+    pub fn new<Cards: IntoIterator<Item = Card>>(name: String, cards: Cards) -> Self {
+        Library {
+            name,
+            cards: cards
+                .into_iter()
+                .map(|card| (Uuid::new_v4(), card))
+                .collect(),
+        }
+    }
+
     /// looks up a mapped card by id and returns it
     pub fn get_card(&self, card_id: &Uuid) -> Option<&Card> {
         self.cards.get(card_id)
@@ -28,17 +39,6 @@ impl Library {
 
     pub fn new_empty(name: String) -> Self {
         Self::new(name, [])
-    }
-
-    /// creates a library
-    pub fn new<Cards: IntoIterator<Item = Card>>(name: String, cards: Cards) -> Self {
-        Library {
-            name,
-            cards: cards
-                .into_iter()
-                .map(|card| (Uuid::new_v4(), card))
-                .collect(),
-        }
     }
 
     /// gets the libraries cards
@@ -58,6 +58,11 @@ impl Library {
     /// returns name of library
     pub fn get_name(&self) -> &str {
         &self.name
+    }
+
+    /// renames library
+    pub fn update_name(&mut self, new_name: String) {
+        self.name = new_name;
     }
 }
 

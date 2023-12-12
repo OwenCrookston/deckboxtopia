@@ -8,7 +8,7 @@ use uuid::Uuid;
 pub struct Deck {
     name: String,
     library_id: Uuid,
-    cards: Vec<Uuid>,
+    card_ids: Vec<Uuid>,
 }
 
 impl Deck {
@@ -20,12 +20,12 @@ impl Deck {
         // The randomness is supplied by the operating system.
         let mut small_rng = SmallRng::from_entropy();
         let (drawn_len, remaining_count) = {
-            let (drawn, remaining_deck) = self.cards.partial_shuffle(&mut small_rng, count);
+            let (drawn, remaining_deck) = self.card_ids.partial_shuffle(&mut small_rng, count);
             (drawn.len(), remaining_deck.len())
         };
 
         // drain extracts the drawn cards from the deck and leaves the deck with the unshuffled elements
-        let cards = self.cards.drain(0..drawn_len).collect();
+        let cards = self.card_ids.drain(0..drawn_len).collect();
 
         (cards, remaining_count)
     }
@@ -38,12 +38,12 @@ impl Deck {
         &self.name
     }
 
-    pub fn insert_cards(&mut self, cards: Vec<Uuid>) {
-        self.cards.extend(cards);
+    pub fn insert_cards(&mut self, card_ids: Vec<Uuid>) {
+        self.card_ids.extend(card_ids);
     }
 
     pub fn get_cards(&self) -> impl Iterator<Item = &Uuid> {
-        self.cards.iter()
+        self.card_ids.iter()
     }
 }
 
@@ -54,7 +54,7 @@ mod tests {
     fn test_shuffle() {
         let mut new_deck = Deck::default();
 
-        let (cards, rest_of_deck) = new_deck.draw_random(3);
-        println!("{:?}, {:?}", cards, rest_of_deck);
+        let (card_ids, rest_of_deck) = new_deck.draw_random(3);
+        println!("{:?}, {:?}", card_ids, rest_of_deck);
     }
 }

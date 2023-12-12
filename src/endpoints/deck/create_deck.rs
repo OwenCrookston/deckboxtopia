@@ -33,7 +33,7 @@ pub async fn create_deck(
 
     let library = shuttle_persist
         .load::<Library>(&new_deck.get_library_id().to_string())
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
 
     shuttle_persist
         .save(&new_deck_id.to_string(), &new_deck)

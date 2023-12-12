@@ -23,6 +23,7 @@ pub async fn update(
 ) -> Result<(), StatusCode> {
     let deck_id = deck_id.to_string();
 
+    // load deck from store
     let mut current_deck = shuttle_persist
         .load::<Deck>(&deck_id)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;

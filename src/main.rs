@@ -7,7 +7,7 @@ use axum::{
 };
 use endpoints::{
     deck::create_deck::create_deck, deck::draw::draw, deck::update_deck::update,
-    library::create_library::create_library,
+    library::create_library::create_library, library::update_library::update_library,
 };
 use shuttle_persist::PersistInstance;
 use tower_http::services::ServeDir;
@@ -24,7 +24,9 @@ async fn main(#[shuttle_persist::Persist] persist: PersistInstance) -> shuttle_a
         .route("/create", post(create_deck))
         .route("/:deck_id", post(update));
 
-    let library_routes = Router::new().route("/create", post(create_library));
+    let library_routes = Router::new()
+        .route("/create", post(create_library))
+        .route("/update/:library_id", post(update_library));
 
     let router = Router::new()
         .nest_service("/ui", ServeDir::new("static"))
