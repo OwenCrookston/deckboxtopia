@@ -1,4 +1,4 @@
-use crate::endpoints::create_library::CreateLibraryResponse;
+use crate::endpoints::library::create_library::CreateLibraryResponse;
 
 use super::card::Card;
 use serde::{Deserialize, Serialize};

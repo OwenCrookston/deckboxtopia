@@ -6,7 +6,8 @@ use axum::{
     Router,
 };
 use endpoints::{
-    create_deck::create_deck, create_library::create_library, draw::draw, update_deck::update,
+    deck::create_deck::create_deck, deck::draw::draw, deck::update_deck::update,
+    library::create_library::create_library,
 };
 use shuttle_persist::PersistInstance;
 use tower_http::services::ServeDir;

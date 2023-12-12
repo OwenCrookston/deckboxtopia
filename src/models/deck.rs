@@ -1,4 +1,3 @@
-use super::card::Card;
 use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
 use rand::SeedableRng;

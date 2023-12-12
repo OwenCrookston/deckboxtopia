@@ -8,11 +8,7 @@ use serde::{Deserialize, Serialize};
 use shuttle_persist::PersistInstance;
 use uuid::Uuid;
 
-use crate::models::{
-    card::Card,
-    deck::{self, Deck},
-    library::Library,
-};
+use crate::models::{card::Card, deck::Deck, library::Library};
 
 #[derive(Deserialize)]
 #[serde(default)]
