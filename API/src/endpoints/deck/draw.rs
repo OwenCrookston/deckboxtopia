@@ -5,10 +5,12 @@ use axum::{
 };
 
 use serde::{Deserialize, Serialize};
-use shuttle_persist::PersistInstance;
 use uuid::Uuid;
 
-use crate::models::{card::Card, deck::Deck, library::Library};
+use crate::{
+    models::{card::Card, deck::Deck, library::Library},
+    state::ApiState,
+};
 
 #[derive(Deserialize)]
 #[serde(default)]
@@ -42,16 +44,18 @@ pub struct DrawResponse {
 /// }
 /// ```
 pub async fn draw(
-    State(shuttle_persist): State<PersistInstance>,
+    State(state): State<ApiState>,
     Path(deck_id): Path<Uuid>,
     Query(params): Query<DrawQueryParams>,
 ) -> Result<Json<DrawResponse>, StatusCode> {
     let deck_id = deck_id.to_string();
-    let mut current_deck = shuttle_persist
+    let mut current_deck = state
+        .persist
         .load::<Deck>(&deck_id)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let related_library = shuttle_persist
+    let related_library = state
+        .persist
         .load::<Library>(&current_deck.get_library_id().to_string())
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -74,7 +78,8 @@ pub async fn draw(
     };
 
     // save remaining undrawn cards as the updated deck
-    shuttle_persist
+    state
+        .persist
         .save(&deck_id, current_deck)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 

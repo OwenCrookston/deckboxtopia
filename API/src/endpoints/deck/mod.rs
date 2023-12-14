@@ -10,10 +10,11 @@ mod update_deck;
 
 use create_deck::create_deck;
 use draw::draw;
-use shuttle_persist::PersistInstance;
 use update_deck::update;
 
-pub fn routes() -> Router<PersistInstance, Body> {
+use crate::state::ApiState;
+
+pub fn routes() -> Router<ApiState, Body> {
     Router::new()
         .route("/:deck_id/draw", get(draw))
         .route("/create", post(create_deck))

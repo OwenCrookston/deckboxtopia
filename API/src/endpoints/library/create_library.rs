@@ -1,9 +1,11 @@
 use axum::{extract::State, http::StatusCode, Json};
 use serde::{Deserialize, Serialize};
-use shuttle_persist::PersistInstance;
 use uuid::Uuid;
 
-use crate::models::{card::Card, library::Library};
+use crate::{
+    models::{card::Card, library::Library},
+    state::ApiState,
+};
 
 /// ```ignore
 /// {
@@ -30,7 +32,7 @@ pub struct CreateLibraryResponse {
 /// Endpoint: `POST /library`
 /// Body: CreateLibraryRequest
 pub async fn create_library(
-    State(shuttle_persist): State<PersistInstance>,
+    State(state): State<ApiState>,
     Json(create_library_request): Json<CreateLibraryRequest>,
 ) -> Result<Json<CreateLibraryResponse>, StatusCode> {
     // create a uuid for library
@@ -40,7 +42,8 @@ pub async fn create_library(
     let new_library = Library::new(create_library_request.name, create_library_request.cards);
 
     // save library
-    shuttle_persist
+    state
+        .persist
         .save(&library_id.to_string(), &new_library)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 

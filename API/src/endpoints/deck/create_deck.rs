@@ -1,9 +1,11 @@
 use axum::{extract::State, http::StatusCode, Json};
 use serde::Serialize;
-use shuttle_persist::PersistInstance;
 use uuid::Uuid;
 
-use crate::models::{card::Card, deck::Deck, library::Library};
+use crate::{
+    models::{card::Card, deck::Deck, library::Library},
+    state::ApiState,
+};
 
 #[derive(Serialize)]
 pub struct CreateDeckResponse {
@@ -26,16 +28,18 @@ pub struct CreateDeckResponse {
 /// }
 /// ```
 pub async fn create_deck(
-    State(shuttle_persist): State<PersistInstance>,
+    State(state): State<ApiState>,
     Json(new_deck): Json<Deck>,
 ) -> Result<Json<CreateDeckResponse>, StatusCode> {
     let new_deck_id = Uuid::new_v4();
 
-    let library = shuttle_persist
+    let library = state
+        .persist
         .load::<Library>(&new_deck.get_library_id().to_string())
         .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-    shuttle_persist
+    state
+        .persist
         .save(&new_deck_id.to_string(), &new_deck)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 

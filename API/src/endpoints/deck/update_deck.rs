@@ -3,10 +3,12 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use shuttle_persist::PersistInstance;
 use uuid::Uuid;
 
-use crate::models::{deck::Deck, library::Library};
+use crate::{
+    models::{deck::Deck, library::Library},
+    state::ApiState,
+};
 
 /// Updates a deck by adding a set of cards to it
 /// Endpoint: `POST /decks/:deckId`
@@ -17,19 +19,21 @@ use crate::models::{deck::Deck, library::Library};
 /// ]
 /// ```
 pub async fn update(
-    State(shuttle_persist): State<PersistInstance>,
+    State(state): State<ApiState>,
     Path(deck_id): Path<Uuid>,
     Json(card_ids): Json<Vec<Uuid>>,
 ) -> Result<(), StatusCode> {
     let deck_id = deck_id.to_string();
 
     // load deck from store
-    let mut current_deck = shuttle_persist
+    let mut current_deck = state
+        .persist
         .load::<Deck>(&deck_id)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // check that the ids to be inserted reflect cards in the library
-    let related_library = shuttle_persist
+    let related_library = state
+        .persist
         .load::<Library>(&current_deck.get_library_id().to_string())
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -41,7 +45,8 @@ pub async fn update(
 
     current_deck.insert_cards(card_ids);
 
-    shuttle_persist
+    state
+        .persist
         .save(&deck_id, current_deck)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
