@@ -1,8 +1,10 @@
 #![cfg_attr(debug_assertions, allow(dead_code))]
 mod endpoints;
 mod models;
+mod state;
 
 use shuttle_persist::PersistInstance;
+use state::ApiState;
 use tower_http::services::ServeDir;
 use tracing::warn;
 
@@ -12,7 +14,9 @@ async fn main(#[shuttle_persist::Persist] persist: PersistInstance) -> shuttle_a
         warn!("Error clearing persistance: {:?}", err);
     }
 
-    let router = endpoints::routes(persist).fallback_service(ServeDir::new("static"));
+    let state = ApiState::new(persist);
+
+    let router = endpoints::routes(state).fallback_service(ServeDir::new("static"));
 
     Ok(router.into())
 }

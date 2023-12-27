@@ -4,10 +4,12 @@ use axum::{
     Json,
 };
 use serde::Deserialize;
-use shuttle_persist::PersistInstance;
 use uuid::Uuid;
 
-use crate::models::{card::Card, library::Library};
+use crate::{
+    models::{card::Card, library::Library},
+    state::ApiState,
+};
 
 /// ```ignore
 /// {
@@ -27,14 +29,15 @@ pub struct UpdateLibraryRequest {
 /// Endpoint: `POST /library/:library_id`
 /// Body: CreateLibraryRequest
 pub async fn update_library(
-    State(shuttle_persist): State<PersistInstance>,
+    State(state): State<ApiState>,
     Path(library_id): Path<Uuid>,
     Json(update_library_request): Json<UpdateLibraryRequest>,
 ) -> Result<(), StatusCode> {
     let library_id = library_id.to_string();
 
     // get the library from store
-    let mut library_to_update = shuttle_persist
+    let mut library_to_update = state
+        .persist
         .load::<Library>(&library_id)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -45,7 +48,8 @@ pub async fn update_library(
     }
 
     // resave modified library to store
-    shuttle_persist
+    state
+        .persist
         .save(&library_id, library_to_update)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
