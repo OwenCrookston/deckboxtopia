@@ -1,4 +1,1 @@
-/target
-.shuttle-storage
-Secrets*.toml
-/static
+**.DS_Store
