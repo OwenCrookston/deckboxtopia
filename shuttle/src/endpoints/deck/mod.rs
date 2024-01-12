@@ -1,5 +1,4 @@
 use axum::{
-    body::Body,
     routing::{get, post},
     Router,
 };
@@ -14,7 +13,7 @@ use update_deck::update;
 
 use crate::state::ApiState;
 
-pub fn routes() -> Router<ApiState, Body> {
+pub fn routes() -> Router<ApiState> {
     Router::new()
         .route("/:deck_id/draw", get(draw))
         .route("/create", post(create_deck))

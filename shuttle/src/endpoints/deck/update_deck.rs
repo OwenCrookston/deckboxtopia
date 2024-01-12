@@ -40,8 +40,8 @@ pub async fn update(
     // if card_id in card_ids is not found in library error out otherwise continue
     card_ids
         .iter()
-        .find(|card_id| related_library.get_card(&card_id).is_some())
-        .ok_or_else(|| StatusCode::NOT_FOUND)?;
+        .find(|card_id| related_library.get_card(card_id).is_some())
+        .ok_or(StatusCode::NOT_FOUND)?;
 
     current_deck.insert_cards(card_ids);
 
