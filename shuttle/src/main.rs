@@ -7,9 +7,11 @@ mod models;
 mod state;
 mod utils;
 
+use axum::http::Method;
 use shuttle_persist::PersistInstance;
 use shuttle_secrets::SecretStore;
 use state::ApiState;
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
 use tracing::warn;
 
@@ -23,7 +25,15 @@ async fn main(
     }
     let state = ApiState::new(persist, &secret_store).map_err(anyhow::Error::new)?;
 
-    let router = endpoints::routes(state).fallback_service(ServeDir::new("static"));
+    let cors = CorsLayer::new()
+        // allow `GET` and `POST` when accessing the resource
+        .allow_methods([Method::GET, Method::POST])
+        // allow requests from any origin
+        .allow_origin(Any);
+
+    let router = endpoints::routes(state)
+        .layer(cors)
+        .fallback_service(ServeDir::new("static"));
 
     Ok(router.into())
 }

@@ -10,7 +10,7 @@ shuttle-runtime = "0.36.0"
 shuttle-secrets = "0.36.0"
 tokio = "1.35.1"
 tracing = "0.1.40"
-tower-http = { version = "0.5.0", features = ["fs"] }
+tower-http = { version = "0.5.0", features = ["fs", "cors"] }
 serde = "1.0.195"
 url = "2.5.0"
 rand = { version = "0.8.5", features = ["small_rng"] }

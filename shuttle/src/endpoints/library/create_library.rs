@@ -1,7 +1,8 @@
 use axum::{extract::State, http::StatusCode, Json};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use uuid::Uuid;
 
+use super::models::LibraryResponse;
 use crate::{
     models::{card::Card, library::Library},
     state::ApiState,
@@ -21,20 +22,13 @@ pub struct CreateLibraryRequest {
     cards: Vec<Card>,
 }
 
-#[derive(Serialize)]
-pub struct CreateLibraryResponse {
-    pub id: Uuid,
-    pub name: String,
-    pub cards: Vec<(Uuid, Card)>,
-}
-
 /// Creates a library by taking in a name and potentially cards
 /// Endpoint: `POST /library`
 /// Body: CreateLibraryRequest
 pub async fn create_library(
     State(state): State<ApiState>,
     Json(create_library_request): Json<CreateLibraryRequest>,
-) -> Result<Json<CreateLibraryResponse>, StatusCode> {
+) -> Result<Json<LibraryResponse>, StatusCode> {
     // create a uuid for library
     let library_id = Uuid::new_v4();
 
@@ -48,5 +42,5 @@ pub async fn create_library(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // build out CreateLibraryResponse and return it
-    Ok(Json(new_library.into_create_library_response(library_id)))
+    Ok(Json(LibraryResponse::from_library(new_library, library_id)))
 }
