@@ -34,6 +34,7 @@ impl ApiState {
         let discord_api = DiscordApi::new(client, discord_config);
 
         // WARNING: Key is produced randomly on startup. It is currently not persisted!
+        // This will log out all users on startup
         let key = Aes256Gcm::generate_key(OsRng);
         let cipher = Aes256Gcm::new(&key);
 
