@@ -1,5 +1,3 @@
-use crate::endpoints::library::create_library::CreateLibraryResponse;
-
 use super::card::Card;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -7,8 +5,8 @@ use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Library {
-    name: String,
-    cards: HashMap<Uuid, Card>,
+    pub name: String,
+    pub cards: HashMap<Uuid, Card>,
 }
 
 impl Library {
@@ -44,15 +42,6 @@ impl Library {
     /// gets the libraries cards
     pub fn get_cards(&self) -> impl Iterator<Item = (&Uuid, &Card)> {
         self.cards.iter()
-    }
-
-    /// constructs the create library response
-    pub fn into_create_library_response(self, id: Uuid) -> CreateLibraryResponse {
-        CreateLibraryResponse {
-            id,
-            name: self.name,
-            cards: self.cards.into_iter().collect(),
-        }
     }
 
     /// returns name of library
