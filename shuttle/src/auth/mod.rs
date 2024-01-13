@@ -1,11 +1,13 @@
-use serde::Deserialize;
+pub mod session;
+use serde::{Deserialize, Serialize};
 use tracing::info;
 
 use crate::utils::RequestBuilderExt;
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct TokenResponse {
     pub access_token: String,
+    pub refresh_token: String,
     pub token_type: String,
     //TODO: Make duration?
     pub expires_in: u32,

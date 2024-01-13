@@ -15,8 +15,10 @@ serde = "1.0.195"
 url = "2.5.0"
 rand = { version = "0.8.5", features = ["small_rng"] }
 shuttle-persist = "0.36.0"
-uuid = "1.6.1"
+uuid = { version = "1.6.1", features = ["serde"] }
 anyhow = "1.0.79"
 surf = "2.3.2"
 base64 = "0.21.7"
 thiserror = "1.0.56"
+serde_json = "1.0.111"
+aes-gcm = "0.10.3"

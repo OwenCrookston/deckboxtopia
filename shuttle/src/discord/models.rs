@@ -1,6 +1,6 @@
 use std::{fmt::Display, u64};
 
-use serde::{de, Deserialize};
+use serde::{de, Deserialize, Serialize};
 
 /// Discord specific identifier
 /// For more information view [Snowflakes](https://discord.com/developers/docs/reference#snowflakes)
@@ -23,13 +23,28 @@ impl<'de> Deserialize<'de> for Snowflake {
     }
 }
 
+impl Serialize for Snowflake {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.0.to_string())
+    }
+}
+
+impl From<u64> for Snowflake {
+    fn from(value: u64) -> Self {
+        Snowflake(value)
+    }
+}
+
 #[derive(Deserialize, Debug)]
 pub struct AuthorizationInfo {
     pub application: Application,
     pub user: User,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct User {
     pub id: Snowflake,
     pub username: String,

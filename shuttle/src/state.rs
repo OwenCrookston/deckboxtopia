@@ -1,10 +1,12 @@
-use std::{ops::Deref, sync::Arc};
+use std::{collections::HashMap, ops::Deref, sync::Arc};
 
+use aes_gcm::{aead::OsRng, Aes256Gcm, KeyInit};
 use shuttle_persist::PersistInstance;
 use shuttle_secrets::SecretStore;
 use tracing::info;
 
 use crate::{
+    auth::session::Session,
     config::{Config, ConfigError},
     discord::{self, DiscordApi},
 };
@@ -20,6 +22,7 @@ pub struct ApiStateInner {
     pub persist: PersistInstance,
     pub config: Config,
     pub discord_api: DiscordApi,
+    pub cipher: Aes256Gcm,
 }
 
 impl ApiState {
@@ -30,13 +33,33 @@ impl ApiState {
         let discord_config = discord::Config::new(secret_store)?;
         let discord_api = DiscordApi::new(client, discord_config);
 
+        // WARNING: Key is produced randomly on startup. It is currently not persisted!
+        let key = Aes256Gcm::generate_key(OsRng);
+        let cipher = Aes256Gcm::new(&key);
+
         Ok(ApiState(Arc::new(ApiStateInner {
             persist,
             config,
             discord_api,
+            cipher,
         })))
     }
+
+    pub fn save_session(&self, sess: &Session, nonce: Vec<u8>) -> anyhow::Result<()> {
+        self.persist.save(&sess.get_kid().to_string(), nonce)?;
+        Ok(())
+    }
+
+    pub fn get_session(&self, sess: &str) -> anyhow::Result<Option<Vec<u8>>> {
+        let mut sessions: Sessions = self
+            .persist
+            .load::<Option<_>>("sessions")?
+            .unwrap_or_default();
+        Ok(sessions.remove(sess))
+    }
 }
+
+pub type Sessions = HashMap<String, Vec<u8>>;
 
 impl Deref for ApiState {
     type Target = ApiStateInner;
