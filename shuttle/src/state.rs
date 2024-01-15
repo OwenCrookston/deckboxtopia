@@ -52,15 +52,9 @@ impl ApiState {
     }
 
     pub fn get_session(&self, sess: &str) -> anyhow::Result<Option<Vec<u8>>> {
-        let mut sessions: Sessions = self
-            .persist
-            .load::<Option<_>>("sessions")?
-            .unwrap_or_default();
-        Ok(sessions.remove(sess))
+        Ok(self.persist.load(sess)?)
     }
 }
-
-pub type Sessions = HashMap<String, Vec<u8>>;
 
 impl Deref for ApiState {
     type Target = ApiStateInner;
