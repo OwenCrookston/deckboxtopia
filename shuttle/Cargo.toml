@@ -4,14 +4,21 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = "0.6.20"
-shuttle-axum = "0.34.0"
-shuttle-runtime = "0.34.0"
-tokio = "1.28.2"
+axum = "0.7.3"
+shuttle-axum = "0.36.0"
+shuttle-runtime = "0.36.0"
+shuttle-secrets = "0.36.0"
+tokio = "1.35.1"
 tracing = "0.1.40"
-tower-http = { version = "0.4.4", features = ["fs", "cors"] }
-serde = "1.0.193"
+tower-http = { version = "0.5.0", features = ["fs", "cors"] }
+serde = "1.0.195"
 url = "2.5.0"
 rand = { version = "0.8.5", features = ["small_rng"] }
-shuttle-persist = "0.34.0"
-uuid = "1.6.1"
+shuttle-persist = "0.36.0"
+uuid = { version = "1.6.1", features = ["serde"] }
+anyhow = "1.0.79"
+surf = "2.3.2"
+base64 = "0.21.7"
+thiserror = "1.0.56"
+serde_json = "1.0.111"
+aes-gcm = "0.10.3"

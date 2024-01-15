@@ -1,5 +1,4 @@
 use axum::{
-    body::Body,
     routing::{get, post},
     Router,
 };
@@ -15,7 +14,7 @@ use update_library::update_library;
 
 use crate::state::ApiState;
 
-pub fn routes() -> Router<ApiState, Body> {
+pub fn routes() -> Router<ApiState> {
     Router::new()
         .route("/create", post(create_library))
         .route(":library_id", get(get_library))
