@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::Deref, sync::Arc};
+use std::{ops::Deref, sync::Arc};
 
 use aes_gcm::{aead::OsRng, Aes256Gcm, KeyInit};
 use shuttle_persist::PersistInstance;
